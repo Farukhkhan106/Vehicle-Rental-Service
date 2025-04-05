@@ -1,0 +1,85 @@
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: linear-gradient(135deg, #74b9ff, #0984e3);
+  height: 100vh;
+  color: #fff;
+  text-align: center;
+}
+
+h1 {
+  font-size: 36px;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.profile-card {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  padding: 40px;
+  width: 100%;
+  max-width: 500px;
+  animation: fadeIn 0.8s ease-in-out;
+  transition: transform 0.3s ease;
+}
+
+.profile-card:hover {
+  transform: translateY(-5px);
+}
+
+.profile-card p {
+  font-size: 18px;
+  color: #333;
+  margin: 12px 0;
+}
+
+strong {
+  color: #007bff;
+}
+
+p.error {
+  color: #ff4d4d;
+  font-weight: bold;
+}
+
+p.loading {
+  color: #feca57;
+  font-style: italic;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.profile-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.profile-table td {
+  padding: 12px 15px;
+  font-size: 18px;
+  border-bottom: 1px solid #ddd;
+  color: #333;
+}
+
+.profile-table td:first-child {
+  font-weight: bold;
+  color: #007bff;
+  width: 40%;
+  text-align: left;
+}
+
+.profile-table tr:last-child td {
+  border-bottom: none;
+}

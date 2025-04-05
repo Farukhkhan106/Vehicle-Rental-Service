@@ -1,0 +1,186 @@
+/* General Styling */
+.dashboard-container {
+  padding: 20px;
+  font-family: 'Inter', sans-serif;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
+
+/* Title Styling */
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1e293b;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Loading & Error Messages */
+.loading-text, .error-text, .no-vehicles {
+  font-size: 1.2rem;
+  color: #475569;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.error-text {
+  color: #e11d48;
+}
+
+/* Filter & Search Section */
+.filter-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.search-input, .filter-dropdown {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: 220px;
+  outline: none;
+  transition: border 0.3s;
+}
+
+.search-input:focus, .filter-dropdown:focus {
+  border: 1px solid #2563eb;
+}
+
+/* Vehicle Grid */
+.vehicle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  justify-content: center;
+}
+
+/* Vehicle Card */
+.vehicle-card {
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.vehicle-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Vehicle Image */
+.vehicle-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.no-image {
+  width: 100%;
+  height: 200px;
+  background-color: #e2e8f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #94a3b8;
+  font-size: 1.1rem;
+}
+
+/* Vehicle Information */
+.vehicle-info {
+  padding: 16px;
+}
+
+.vehicle-name {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+.vehicle-location {
+  font-size: 14px;
+  color: #666;
+  display: flex;
+  align-items: center;
+}
+
+.vehicle-price {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #475569;
+  margin-top: 4px;
+}
+
+/* Availability Status */
+.vehicle-status {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.available {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.unavailable {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Book Button */
+.book-btn {
+  margin-top: 16px;
+  background-color: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  width: 100%;
+  text-align: center;
+}
+
+.book-btn:hover {
+  background-color: #1d4ed8;
+  transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .vehicle-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+
+  .search-input, .filter-dropdown {
+      width: 100%;
+  }
+
+  .filter-container {
+      flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .vehicle-grid {
+      grid-template-columns: 1fr;
+  }
+
+  .dashboard-title {
+      font-size: 1.8rem;
+  }
+}
