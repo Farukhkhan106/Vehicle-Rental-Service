@@ -98,36 +98,22 @@ const UserDashboard = () => {
 
       <div className="vehicle-grid">
         {filteredVehicles.map(vehicle => (
-          <div key={vehicle.id} className="vehicle-card">
-            <img 
-              src={vehicle.photoUrls?.length > 0 ? `http://localhost:8080${vehicle.photoUrls[0]}` : '/placeholder.jpg'} 
-              alt={`${vehicle.brand} ${vehicle.model}`} 
-              className="vehicle-image" 
-              onError={(e) => e.target.src = '/placeholder.jpg'}
-            />
-            <div className="vehicle-info">
-              <h3 className="vehicle-name">{vehicle.brand} {vehicle.model}</h3>
-              <p className="vehicle-price">💰 ₹{vehicle.pricePerDay}/day</p>
-              <p className="vehicle-status">
-                🚗 Status: <span className={vehicle.status === 'AVAILABLE' ? 'available' : 'unavailable'}>
-                  {vehicle.status}
-                </span>
-              </p>
+         // Inside map
+<div key={vehicle.id} className="vehicle-card" onClick={() => navigate(`/user/vehicle/${vehicle.id}`)} style={{ cursor: 'pointer' }}>
+  <img 
+    src={vehicle.photoUrls?.length > 0 ? `http://localhost:8080${vehicle.photoUrls[0]}` : '/placeholder.jpg'} 
+    alt={`${vehicle.brand} ${vehicle.model}`} 
+    className="vehicle-image" 
+    onError={(e) => e.target.src = '/placeholder.jpg'}
+  />
+  <div className="vehicle-info">
+    <h3 className="vehicle-name">{vehicle.brand} {vehicle.model}</h3>
+    <p className="vehicle-price">💰 ₹{vehicle.pricePerDay}/day</p>
+    <p className="vehicle-location">📍 {vehicle.ownerCity}</p>
+    <p className="click-msg">Click for more info</p>
+  </div>
+</div>
 
-              <hr className="divider" />
-
-              <p className="vehicle-location">📍 Location: {vehicle.ownerCity}</p>
-              <p className="vehicle-owner">📞 Contact: {vehicle.ownerPhone}</p>
-              <p className="vehicle-owner">🏠 Address: {vehicle.ownerAddress}</p>
-
-              <button 
-                onClick={() => navigate(`/user/book-vehicle/${vehicle.id}`)}
-                className="book-btn"
-              >
-                Book Now
-              </button>
-            </div>
-          </div>
         ))}
       </div>
     </div>

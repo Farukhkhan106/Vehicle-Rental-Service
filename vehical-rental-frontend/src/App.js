@@ -13,6 +13,7 @@ import Home from './components/Home';
 import Profile from './components/User/Profile';
 import UploadVehicle from './components/User/UploadVehicle';
 import './App.css';
+import VehicleDetail from './components/User/VehicleDetail';
 
 function App() {
   return (
@@ -57,7 +58,8 @@ function App() {
               <Support />
             </PrivateRoute>
           } /> 
-         <Route path="/user/profile" element={<Profile />} />  
+         <Route path="/user/profile" element={<Profile />} /> 
+         <Route path="/user/vehicle/:id" element={<VehicleDetail />} /> 
          <Route path="/user/upload-vehicle" element={<UploadVehicle />} />   
       </Routes>
       </div>
