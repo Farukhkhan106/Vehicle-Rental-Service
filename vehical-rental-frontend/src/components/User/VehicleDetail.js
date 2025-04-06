@@ -127,128 +127,127 @@ const VehicleDetail = () => {
     <div>
       <UserNavbar />
       <div className="vehicle-detail-container">
+        <div className="two-column-layout">
+          {/* Left Column */}
+          <div className="left-column">
+            <div className="booking-section">
+              <h2>Book This Vehicle</h2>
+              <div className="booking-inputs">
+                <label>
+                  Start Date:
+                  <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                </label>
+                <label>
+                  Start Time:
+                  <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+                </label>
+                <label>
+                  End Date:
+                  <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                </label>
+                <label>
+                  End Time:
+                  <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+                </label>
+              </div>
 
-        {/* Top Section */}
-        <div style={{ fontSize: '14px', marginBottom: '10px', color: '#777' }}>
-          <span style={{ color: '#1a73e8', cursor: 'pointer' }} onClick={() => window.history.back()}>← Back</span> / {vehicle.brand} {vehicle.model}
-        </div>
+              {warning && <p className="warning-text">⚠️ {warning}</p>}
 
-        <h1>{vehicle.brand} {vehicle.model}</h1>
+              {totalPrice > 0 && (
+                <div className="total-price">
+                  <p>Rental Price: ₹{rentalAmount}</p>
+                  <p>Duration: <strong>{durationHours} hours</strong></p>
+                  <p>Security Deposit: ₹{securityDeposit} <span style={{ fontSize: '12px', color: '#888' }}>(Refundable)</span></p>
+                  <hr style={{ margin: '10px 0' }} />
+                  <p><strong>Total Payable Now: ₹{totalPrice}</strong></p>
+                  <p style={{ fontSize: '13px', color: '#777' }}>
+                    Security deposit will be refunded after vehicle inspection.<br />
+                    Deductions may apply for late return, fuel shortage, or any damage.
+                  </p>
+                </div>
+              )}
 
-        {vehicle.photoUrls?.length > 0 ? (
-          <div className="vehicle-images-gallery">
-            {vehicle.photoUrls.map((url, index) => (
-              <img
-                key={index}
-                src={`http://localhost:8080${url}`}
-                alt={`Vehicle ${index + 1}`}
-                className="vehicle-detail-image"
-                onError={(e) => { e.target.src = '/placeholder.jpg' }}
-              />
-            ))}
-          </div>
-        ) : (
-          <img src="/placeholder.jpg" alt="No Image" className="vehicle-detail-image" />
-        )}
-
-        <div className="vehicle-detail-info">
-          <p><strong>Price Per Day:</strong> ₹{vehicle.pricePerDay}</p>
-          <p><strong>Status:</strong> {vehicle.status}</p>
-        </div>
-
-        <h2>Owner Details</h2>
-        <div className="owner-info">
-          <p><strong>Phone:</strong> {vehicle.ownerPhone}</p>
-          <p><strong>City:</strong> {vehicle.ownerCity}</p>
-          <p><strong>Address:</strong> {vehicle.ownerAddress}</p>
-        </div>
-
-        {/* Booking Section */}
-        <div className="booking-section">
-          <h2>Book This Vehicle</h2>
-          <div className="booking-inputs">
-            <label>
-              Start Date:
-              <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-            </label>
-            <label>
-              Start Time:
-              <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
-            </label>
-            <label>
-              End Date:
-              <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-            </label>
-            <label>
-              End Time:
-              <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
-            </label>
-          </div>
-
-          {warning && <p className="warning-text">⚠️ {warning}</p>}
-
-          {totalPrice > 0 && (
-            <div className="total-price">
-              <p>Rental Price: ₹{rentalAmount}</p>
-              <p>Duration: <strong>{durationHours} hours</strong></p>
-              <p>Security Deposit: ₹{securityDeposit} <span style={{ fontSize: '12px', color: '#888' }}>(Refundable)</span></p>
-              <hr style={{ margin: '10px 0' }} />
-              <p><strong>Total Payable Now: ₹{totalPrice}</strong></p>
-              <p style={{ fontSize: '13px', color: '#777' }}>
-                Security deposit will be refunded after vehicle inspection.<br />
-                Deductions may apply for late return, fuel shortage, or any damage.
-              </p>
+              <button className="payment-button" onClick={handlePayment}>
+                Proceed to Payment
+              </button>
             </div>
-          )}
 
-          <button className="payment-button" onClick={handlePayment}>
-            Proceed to Payment
-          </button>
-        </div>
+            {/* Map Section */}
+            <div className="map-wrapper">
+              <h2>Vehicle Location</h2>
+              <MapContainer 
+                center={[location.lat, location.lng]} 
+                zoom={13} 
+                scrollWheelZoom={false}
+                style={{ height: '300px', width: '100%', borderRadius: '12px' }}
+              >
+                <TileLayer
+                  attribution='&copy; OpenStreetMap contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <Marker position={[location.lat, location.lng]}>
+                  <Popup>
+                    {vehicle.brand} {vehicle.model} Location
+                  </Popup>
+                </Marker>
+              </MapContainer>
+              <a 
+                href={`https://www.google.com/maps?q=${location.lat},${location.lng}`} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                style={{ fontSize: '14px', color: '#1a73e8', display: 'block', marginTop: '8px' }}
+              >
+                Open in Google Maps →
+              </a>
+            </div>
+          </div>
 
-        {/* Map Section */}
-        <div className="map-wrapper">
-          <h2>Vehicle Location</h2>
-          <MapContainer 
-            center={[location.lat, location.lng]} 
-            zoom={13} 
-            scrollWheelZoom={false}
-            style={{ height: '300px', width: '100%', borderRadius: '12px' }}
-          >
-            <TileLayer
-              attribution='&copy; OpenStreetMap contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <Marker position={[location.lat, location.lng]}>
-              <Popup>
-                {vehicle.brand} {vehicle.model} Location
-              </Popup>
-            </Marker>
-          </MapContainer>
-          <a 
-            href={`https://www.google.com/maps?q=${location.lat},${location.lng}`} 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            style={{ fontSize: '14px', color: '#1a73e8', display: 'block', marginTop: '8px' }}
-          >
-            Open in Google Maps →
-          </a>
-        </div>
+          {/* Right Column */}
+          <div className="right-column">
+            <div className="vehicle-detail-card">
+              <h2>Vehicle Details</h2>
+              <p><strong>Brand:</strong> {vehicle.brand}</p>
+              <p><strong>Model:</strong> {vehicle.model}</p>
+              <p><strong>Price Per Day:</strong> ₹{vehicle.pricePerDay}</p>
+              <p><strong>Status:</strong> {vehicle.status}</p>
+              {vehicle.photoUrls?.length > 0 && (
+                <div className="vehicle-images-gallery">
+                  {vehicle.photoUrls.map((url, index) => (
+                    <img
+                      key={index}
+                      src={`http://localhost:8080${url}`}
+                      alt={`Vehicle ${index + 1}`}
+                      className="vehicle-detail-image"
+                      onError={(e) => { e.target.src = '/placeholder.jpg' }}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
 
-        <div className="rental-instructions">
-          <h3>Rental Instructions:</h3>
-          <ul>
-            <li>Minimum booking: 5 hours</li>
-            <li>5-hour bookings have ₹50 short duration charge</li>
-            <li>Pricing is hourly (based on daily rate)</li>
-            <li>15-minute grace period for returns</li>
-            <li>₹100/hour late return charge</li>
-            <li>No refund for early return</li>
-            <li>Security deposit ₹1000 taken at booking</li>
-            <li>Deposit refundable after damage/fuel check</li>
-            <li>Photos or proof shared for any deduction</li>
-            <li>Refund processed within 3-5 working days</li>
-          </ul>
+            <div className="owner-detail-card">
+              <h2>Owner Details</h2>
+              <p><strong>Phone:</strong> {vehicle.ownerPhone}</p>
+              <p><strong>City:</strong> {vehicle.ownerCity}</p>
+              <p><strong>Address:</strong> {vehicle.ownerAddress}</p>
+            </div>
+
+            <div className="rental-instructions">
+              <h3>Rental Instructions:</h3>
+              <ul>
+                <li>Minimum booking: 5 hours</li>
+                <li>5-hour bookings have ₹50 short duration charge</li>
+                <li>Pricing is hourly (based on daily rate)</li>
+                <li>15-minute grace period for returns</li>
+                <li>₹100/hour late return charge</li>
+                <li>No refund for early return</li>
+                <li>Security deposit ₹1000 taken at booking</li>
+                <li>Deposit refundable after damage/fuel check</li>
+                <li>Photos or proof shared for any deduction</li>
+                <li>Refund processed within 3-5 working days</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
