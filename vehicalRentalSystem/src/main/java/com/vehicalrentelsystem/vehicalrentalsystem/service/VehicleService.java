@@ -145,6 +145,10 @@ public class VehicleService {
                 .build();
     }
 
+    public Vehicle getVehicleById(Long id) {
+        return vehicleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found with ID: " + id));
+    }
     private String savePhoto(MultipartFile file) throws IOException {
         String uploadDir = "F:/springBoot/uploads/";
         File uploadFolder = new File(uploadDir);

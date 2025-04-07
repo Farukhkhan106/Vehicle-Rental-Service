@@ -2,6 +2,7 @@ package com.vehicalrentelsystem.vehicalrentalsystem.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vehicalrentelsystem.vehicalrentalsystem.dto.VehicleDTO;
+import com.vehicalrentelsystem.vehicalrentalsystem.model.Vehicle;
 import com.vehicalrentelsystem.vehicalrentalsystem.service.VehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -102,6 +103,17 @@ public class VehicleController {
             return ResponseEntity.status(500).body("Error deleting vehicle: " + e.getMessage());
         }
     }
+
+    @GetMapping("/details/{id}")
+    public ResponseEntity<?> getVehicleDetails(@PathVariable Long id) {
+        try {
+            Vehicle vehicle = vehicleService.getVehicleById(id);
+            return ResponseEntity.ok(vehicle);
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body("Vehicle not found: " + e.getMessage());
+        }
+    }
+
 
 
 }
