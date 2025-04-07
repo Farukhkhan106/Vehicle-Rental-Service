@@ -1,4 +1,4 @@
-// BookingDTO.java
+
 package com.vehicalrentelsystem.vehicalrentalsystem.dto;
 
 import lombok.*;

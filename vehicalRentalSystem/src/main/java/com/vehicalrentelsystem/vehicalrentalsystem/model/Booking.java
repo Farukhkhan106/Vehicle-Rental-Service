@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Entity
 @Table(name = "bookings")
-@Data // This annotation generates getters and setters
+@Data
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

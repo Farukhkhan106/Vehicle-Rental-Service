@@ -1,6 +1,7 @@
 package com.vehicalrentelsystem.vehicalrentalsystem.service;
 
 import com.vehicalrentelsystem.vehicalrentalsystem.dto.BookingDTO;
+import com.vehicalrentelsystem.vehicalrentalsystem.dto.MyBookingDetailDTO;
 import com.vehicalrentelsystem.vehicalrentalsystem.model.Booking;
 import com.vehicalrentelsystem.vehicalrentalsystem.model.BookingStatus;
 import com.vehicalrentelsystem.vehicalrentalsystem.model.User;
@@ -11,8 +12,8 @@ import org.springframework.stereotype.Service;
 import com.vehicalrentelsystem.vehicalrentalsystem.model.Vehicle;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,7 +36,6 @@ public class BookingService {
         Vehicle vehicle = vehicleRepository.findById(bookingDTO.getVehicleId())
                 .orElseThrow(() -> new RuntimeException("Vehicle not found"));
 
-        // Check for overlapping bookings
         List<Booking> conflicts = bookingRepository.findOverlappingBookings(
                 bookingDTO.getVehicleId(),
                 bookingDTO.getStartDate(),
@@ -75,6 +75,11 @@ public class BookingService {
         bookingRepository.save(booking);
     }
 
+    public boolean isVehicleAvailable(Long vehicleId, LocalDate startDate, LocalDate endDate) {
+        List<Booking> overlaps = bookingRepository.findOverlappingBookings(vehicleId, startDate, endDate);
+        return overlaps.isEmpty();
+    }
+
     private BookingDTO mapToDTO(Booking booking) {
         return new BookingDTO(
                 booking.getId(),
@@ -85,8 +90,39 @@ public class BookingService {
                 booking.getStatus().name()
         );
     }
+    public Optional<Booking> findOverlappingBooking(Long vehicleId, LocalDate startDate, LocalDate endDate) {
+        return bookingRepository.findFirstByVehicleIdAndDateRangeOverlap(vehicleId, startDate, endDate);
+    }
+   //this is for set all mybookingdetails set into dto
+    public List<MyBookingDetailDTO> getMyDetailedBookings(Long userId) {
+        List<Booking> bookings = bookingRepository.findByUserId(userId);
 
+        return bookings.stream().map(booking -> {
+            Vehicle v = booking.getVehicle();
+            MyBookingDetailDTO dto = new MyBookingDetailDTO();
 
+            dto.setBookingId(booking.getId());
+            dto.setStartDate(booking.getStartDate());
+            dto.setEndDate(booking.getEndDate());
+            dto.setStatus(booking.getStatus().name());
+
+            dto.setVehicleId(v.getId());
+            dto.setBrand(v.getBrand());
+            dto.setModel(v.getModel());
+            dto.setNumber(v.getNumberPlate());
+            dto.setPricePerDay(v.getPricePerDay().doubleValue());
+            dto.setOwnerCity(v.getOwnerCity());
+            dto.setOwnerPhone(v.getOwnerPhone());
+
+            // Get first image from JSON
+            String[] images = new com.google.gson.Gson().fromJson(v.getPhotosJson(), String[].class);
+            if (images != null && images.length > 0) {
+                dto.setImage(images[0]);
+            }
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
 
 
 }

@@ -1,6 +1,8 @@
 package com.vehicalrentelsystem.vehicalrentalsystem.controller;
 
 import com.vehicalrentelsystem.vehicalrentalsystem.dto.BookingDTO;
+import com.vehicalrentelsystem.vehicalrentalsystem.dto.MyBookingDetailDTO;
+import com.vehicalrentelsystem.vehicalrentalsystem.model.Booking;
 import com.vehicalrentelsystem.vehicalrentalsystem.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -8,7 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/booking")
@@ -34,5 +39,30 @@ public class BookingController {
         return ResponseEntity.ok("Booking cancelled successfully!");
     }
 
+    @GetMapping("/check-availability")
+    public ResponseEntity<Map<String, Object>> checkAvailability(
+            @RequestParam Long vehicleId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+        Optional<Booking> overlappingBooking = bookingService.findOverlappingBooking(vehicleId, startDate, endDate);
+
+        Map<String, Object> response = new HashMap<>();
+        if (overlappingBooking.isPresent()) {
+            Booking booking = overlappingBooking.get();
+            response.put("available", false);
+            response.put("unavailableFrom", booking.getStartDate().toString());
+            response.put("unavailableTo", booking.getEndDate().toString());
+        } else {
+            response.put("available", true);
+        }
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/my-detailed-bookings/{userId}")
+    public ResponseEntity<List<MyBookingDetailDTO>> getDetailedBookings(@PathVariable Long userId) {
+        return ResponseEntity.ok(bookingService.getMyDetailedBookings(userId));
+    }
 
 }

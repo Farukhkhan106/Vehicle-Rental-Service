@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
@@ -22,4 +23,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+    @Query("SELECT b FROM Booking b WHERE b.vehicle.id = :vehicleId AND " +
+            "(:startDate <= b.endDate AND :endDate >= b.startDate)")
+    Optional<Booking> findFirstByVehicleIdAndDateRangeOverlap(
+            @Param("vehicleId") Long vehicleId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
+
 }
