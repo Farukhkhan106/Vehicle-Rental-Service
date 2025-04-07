@@ -8,6 +8,20 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
+import {
+  Phone,
+  MapPin,
+  IndianRupee,
+  User2,
+  Car,
+  CalendarClock,
+  Clock4,
+  ShieldCheck,
+  AlertTriangle,
+  Map,
+} from 'lucide-react';
+
+// Fixing marker icon issue with Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -42,7 +56,6 @@ const VehicleDetail = () => {
         };
         setVehicle(data);
 
-        // Geocode the owner's address
         const address = `${data.ownerAddress}, ${data.ownerCity}`;
         const geo = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=YOUR_OPENCAGE_API_KEY`);
         const geoData = await geo.json();
@@ -105,7 +118,7 @@ const VehicleDetail = () => {
     }
   }, [startDate, endDate, startTime, endTime, vehicle]);
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     if (!startDate || !endDate || !startTime || !endTime) {
       alert("Please fill in all booking details.");
       return;
@@ -114,7 +127,24 @@ const VehicleDetail = () => {
       alert("Booking must be at least 5 hours.");
       return;
     }
-    alert(`Proceeding to payment of ₹${totalPrice}. Payment integration coming soon.`);
+
+    const confirmBooking = window.confirm(`Are you sure you want to pay ₹${totalPrice} for booking?`);
+    if (!confirmBooking) return;
+
+    const bookingData = {
+      userId: 1, // Replace with real user ID
+      vehicleId: vehicle.id,
+      startDate: `${startDate}T${startTime}`,
+      endDate: `${endDate}T${endTime}`,
+    };
+
+    try {
+      const response = await api.post('/booking/create', bookingData);
+      alert(response.data);
+    } catch (error) {
+      console.error("Error creating booking:", error);
+      alert("Failed to create booking. Please try again.");
+    }
   };
 
   if (loading) return <p>Loading vehicle details...</p>;
@@ -128,36 +158,23 @@ const VehicleDetail = () => {
       <UserNavbar />
       <div className="vehicle-detail-container">
         <div className="two-column-layout">
-          {/* Left Column */}
           <div className="left-column">
             <div className="booking-section">
-              <h2>Book This Vehicle</h2>
+              <h2><CalendarClock size={20} /> Book This Vehicle</h2>
               <div className="booking-inputs">
-                <label>
-                  Start Date:
-                  <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                </label>
-                <label>
-                  Start Time:
-                  <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
-                </label>
-                <label>
-                  End Date:
-                  <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-                </label>
-                <label>
-                  End Time:
-                  <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
-                </label>
+                <label>Start Date:<input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} /></label>
+                <label>Start Time:<input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} /></label>
+                <label>End Date:<input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} /></label>
+                <label>End Time:<input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} /></label>
               </div>
 
-              {warning && <p className="warning-text">⚠️ {warning}</p>}
+              {warning && <p className="warning-text"><AlertTriangle size={16} /> {warning}</p>}
 
               {totalPrice > 0 && (
                 <div className="total-price">
-                  <p>Rental Price: ₹{rentalAmount}</p>
-                  <p>Duration: <strong>{durationHours} hours</strong></p>
-                  <p>Security Deposit: ₹{securityDeposit} <span style={{ fontSize: '12px', color: '#888' }}>(Refundable)</span></p>
+                  <p><IndianRupee size={16} /> Rental Price: ₹{rentalAmount}</p>
+                  <p><Clock4 size={16} /> Duration: <strong>{durationHours} hours</strong></p>
+                  <p><ShieldCheck size={16} /> Security Deposit: ₹{securityDeposit} <span style={{ fontSize: '12px', color: '#888' }}>(Refundable)</span></p>
                   <hr style={{ margin: '10px 0' }} />
                   <p><strong>Total Payable Now: ₹{totalPrice}</strong></p>
                   <p style={{ fontSize: '13px', color: '#777' }}>
@@ -167,20 +184,12 @@ const VehicleDetail = () => {
                 </div>
               )}
 
-              <button className="payment-button" onClick={handlePayment}>
-                Proceed to Payment
-              </button>
+              <button className="payment-button" onClick={handlePayment}>Proceed to Payment</button>
             </div>
 
-            {/* Map Section */}
             <div className="map-wrapper">
-              <h2>Vehicle Location</h2>
-              <MapContainer 
-                center={[location.lat, location.lng]} 
-                zoom={13} 
-                scrollWheelZoom={false}
-                style={{ height: '300px', width: '100%', borderRadius: '12px' }}
-              >
+              <h2><Map size={20} /> Vehicle Location</h2>
+              <MapContainer center={[location.lat, location.lng]} zoom={13} scrollWheelZoom={false} style={{ height: '300px', width: '100%', borderRadius: '12px' }}>
                 <TileLayer
                   attribution='&copy; OpenStreetMap contributors'
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -191,24 +200,18 @@ const VehicleDetail = () => {
                   </Popup>
                 </Marker>
               </MapContainer>
-              <a 
-                href={`https://www.google.com/maps?q=${location.lat},${location.lng}`} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                style={{ fontSize: '14px', color: '#1a73e8', display: 'block', marginTop: '8px' }}
-              >
+              <a href={`https://www.google.com/maps?q=${location.lat},${location.lng}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: '14px', color: '#1a73e8', display: 'block', marginTop: '8px' }}>
                 Open in Google Maps →
               </a>
             </div>
           </div>
 
-          {/* Right Column */}
           <div className="right-column">
             <div className="vehicle-detail-card">
-              <h2>Vehicle Details</h2>
+              <h2><Car size={20} /> Vehicle Details</h2>
               <p><strong>Brand:</strong> {vehicle.brand}</p>
               <p><strong>Model:</strong> {vehicle.model}</p>
-              <p><strong>Price Per Day:</strong> ₹{vehicle.pricePerDay}</p>
+              <p><IndianRupee size={16} /> <strong>Price Per Day:</strong> ₹{vehicle.pricePerDay}</p>
               <p><strong>Status:</strong> {vehicle.status}</p>
               {vehicle.photoUrls?.length > 0 && (
                 <div className="vehicle-images-gallery">
@@ -226,14 +229,14 @@ const VehicleDetail = () => {
             </div>
 
             <div className="owner-detail-card">
-              <h2>Owner Details</h2>
-              <p><strong>Phone:</strong> {vehicle.ownerPhone}</p>
-              <p><strong>City:</strong> {vehicle.ownerCity}</p>
-              <p><strong>Address:</strong> {vehicle.ownerAddress}</p>
+              <h2><User2 size={20} /> Owner Details</h2>
+              <p><Phone size={16} /> <strong>Phone:</strong> {vehicle.ownerPhone}</p>
+              <p><MapPin size={16} /> <strong>City:</strong> {vehicle.ownerCity}</p>
+              <p><MapPin size={16} /> <strong>Address:</strong> {vehicle.ownerAddress}</p>
             </div>
 
             <div className="rental-instructions">
-              <h3>Rental Instructions:</h3>
+              <h3><ShieldCheck size={18} /> Rental Instructions:</h3>
               <ul>
                 <li>Minimum booking: 5 hours</li>
                 <li>5-hour bookings have ₹50 short duration charge</li>
@@ -247,6 +250,7 @@ const VehicleDetail = () => {
                 <li>Refund processed within 3-5 working days</li>
               </ul>
             </div>
+
           </div>
         </div>
       </div>
