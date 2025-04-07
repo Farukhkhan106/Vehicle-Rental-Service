@@ -21,7 +21,6 @@ import {
   Map,
 } from 'lucide-react';
 
-// Fixing marker icon issue with Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -44,6 +43,8 @@ const VehicleDetail = () => {
   const [rentalAmount, setRentalAmount] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const [warning, setWarning] = useState('');
+  const [availabilityWarning, setAvailabilityWarning] = useState('');
+
   const securityDeposit = 1000;
 
   useEffect(() => {
@@ -118,32 +119,60 @@ const VehicleDetail = () => {
     }
   }, [startDate, endDate, startTime, endTime, vehicle]);
 
+  useEffect(() => {
+    const checkAvailability = async () => {
+      if (!vehicle || rentalAmount === 0) return;
+
+      try {
+        const res = await api.get('/booking/check-availability', {
+          params: {
+            vehicleId: vehicle.id,
+            startDate,
+            endDate
+          }
+        });
+
+        if (!res.data) {
+          setAvailabilityWarning("Vehicle is already booked for the selected dates.");
+        } else {
+          setAvailabilityWarning('');
+        }
+      } catch (err) {
+        console.error("Availability check failed", err);
+        setAvailabilityWarning("Could not check availability. Try again.");
+      }
+    };
+
+    checkAvailability();
+  }, [startDate, endDate, startTime, endTime, vehicle, rentalAmount]);
+
   const handlePayment = async () => {
     if (!startDate || !endDate || !startTime || !endTime) {
       alert("Please fill in all booking details.");
       return;
     }
-    if (totalPrice === 0) {
-      alert("Booking must be at least 5 hours.");
+
+    if (totalPrice === 0 || availabilityWarning) {
+      alert("Booking is not valid.");
       return;
     }
 
-    const confirmBooking = window.confirm(`Are you sure you want to pay ₹${totalPrice} for booking?`);
-    if (!confirmBooking) return;
-
-    const bookingData = {
-      userId: 1, // Replace with real user ID
-      vehicleId: vehicle.id,
-      startDate: `${startDate}T${startTime}`,
-      endDate: `${endDate}T${endTime}`,
-    };
-
     try {
+      const confirmBooking = window.confirm(`Are you sure you want to pay ₹${totalPrice} for booking?`);
+      if (!confirmBooking) return;
+
+      const bookingData = {
+        userId: 1, // Replace with actual userId
+        vehicleId: vehicle.id,
+        startDate: `${startDate}T${startTime}`,
+        endDate: `${endDate}T${endTime}`,
+      };
+
       const response = await api.post('/booking/create', bookingData);
       alert(response.data);
     } catch (error) {
       console.error("Error creating booking:", error);
-      alert("Failed to create booking. Please try again.");
+      alert("Something went wrong. Please try again later.");
     }
   };
 
@@ -169,8 +198,9 @@ const VehicleDetail = () => {
               </div>
 
               {warning && <p className="warning-text"><AlertTriangle size={16} /> {warning}</p>}
+              {availabilityWarning && <p className="warning-text"><AlertTriangle size={16} /> {availabilityWarning}</p>}
 
-              {totalPrice > 0 && (
+              {totalPrice > 0 && !availabilityWarning && (
                 <div className="total-price">
                   <p><IndianRupee size={16} /> Rental Price: ₹{rentalAmount}</p>
                   <p><Clock4 size={16} /> Duration: <strong>{durationHours} hours</strong></p>
@@ -250,7 +280,6 @@ const VehicleDetail = () => {
                 <li>Refund processed within 3-5 working days</li>
               </ul>
             </div>
-
           </div>
         </div>
       </div>
