@@ -30,11 +30,12 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.getUserBookings(userId));
     }
 
-    @DeleteMapping("/cancel/{bookingId}")
+    @PutMapping("/cancel/{bookingId}")
     public ResponseEntity<String> cancelBooking(@PathVariable Long bookingId) {
         bookingService.cancelBooking(bookingId);
         return ResponseEntity.ok("Booking cancelled successfully!");
     }
+
 
     @GetMapping("/check-availability")
     public ResponseEntity<Map<String, Object>> checkAvailability(
