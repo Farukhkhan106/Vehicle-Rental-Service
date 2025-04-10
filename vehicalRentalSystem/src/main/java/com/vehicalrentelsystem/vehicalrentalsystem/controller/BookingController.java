@@ -7,14 +7,11 @@ import com.vehicalrentelsystem.vehicalrentalsystem.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
+import java.util.*;
 @RestController
 @RequestMapping("/booking")
 public class BookingController {
@@ -23,8 +20,8 @@ public class BookingController {
     private BookingService bookingService;
 
     @PostMapping("/create")
-    public ResponseEntity<String> createBooking(@RequestBody BookingDTO bookingDTO) {
-        bookingService.createBooking(bookingDTO);
+    public ResponseEntity<String> createBooking(@RequestBody BookingDTO bookingDTO, Authentication authentication) {
+        bookingService.createBooking(bookingDTO, authentication);
         return ResponseEntity.ok("Booking created successfully!");
     }
 
@@ -46,8 +43,8 @@ public class BookingController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
         Optional<Booking> overlappingBooking = bookingService.findOverlappingBooking(vehicleId, startDate, endDate);
-
         Map<String, Object> response = new HashMap<>();
+
         if (overlappingBooking.isPresent()) {
             Booking booking = overlappingBooking.get();
             response.put("available", false);
@@ -60,9 +57,8 @@ public class BookingController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/my-detailed-bookings/{userId}")
-    public ResponseEntity<List<MyBookingDetailDTO>> getDetailedBookings(@PathVariable Long userId) {
-        return ResponseEntity.ok(bookingService.getMyDetailedBookings(userId));
+    @GetMapping("/my-detailed-bookings-by-user/{userId}")
+    public ResponseEntity<List<MyBookingDetailDTO>> getMyDetailedBookingsByUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(bookingService.getMyDetailedBookingsByUserId(userId));
     }
-
 }

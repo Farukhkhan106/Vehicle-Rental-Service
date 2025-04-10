@@ -58,7 +58,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/vehicle/add").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
                         .requestMatchers("/vehicle/admin/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/booking/create").hasAuthority("ROLE_USER")
+                        .requestMatchers("/booking/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/vehicle/vehicles/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/uploads/**").permitAll() // ✅ Images Access Karne Ke Liye Allow Kiya
                         .anyRequest().authenticated()

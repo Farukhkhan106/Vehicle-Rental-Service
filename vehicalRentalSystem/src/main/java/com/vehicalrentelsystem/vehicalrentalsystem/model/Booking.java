@@ -1,13 +1,15 @@
 package com.vehicalrentelsystem.vehicalrentalsystem.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
 import lombok.Data;
+
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "bookings")
 @Data
 public class Booking {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,6 +25,11 @@ public class Booking {
     private LocalDate startDate;
     private LocalDate endDate;
 
+    private Long ownerId;
+
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
+
+    // ✅ Add this for amount calculation
+    private Double totalAmount;
 }

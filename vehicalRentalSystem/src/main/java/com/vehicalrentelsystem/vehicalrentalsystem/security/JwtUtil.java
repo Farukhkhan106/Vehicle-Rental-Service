@@ -51,7 +51,9 @@ public class JwtUtil {
             role = "ROLE_" + role;
         }
         claims.put("role", role);
+        claims.put("userId", user.getId()); // ✅ Add this line
         return createToken(claims, user.getEmail());
+
     }
 
     // Create token with claims and subject

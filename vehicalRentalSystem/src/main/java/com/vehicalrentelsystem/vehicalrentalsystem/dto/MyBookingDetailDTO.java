@@ -1,6 +1,7 @@
 package com.vehicalrentelsystem.vehicalrentalsystem.dto;
 
 import lombok.Data;
+
 import java.time.LocalDate;
 
 @Data
@@ -15,10 +16,17 @@ public class MyBookingDetailDTO {
     private String brand;
     private String model;
     private String number;
-    private String image; // First image path from photosJson
+    private String image;
     private double pricePerDay;
 
     // Owner Info
     private String ownerCity;
     private String ownerPhone;
+
+    // ✅ Add this
+    private String ownerName;
+
+    // ✅ Add this
+    private Double totalAmount;
+
 }

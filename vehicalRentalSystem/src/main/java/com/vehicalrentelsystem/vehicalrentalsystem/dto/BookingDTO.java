@@ -1,4 +1,3 @@
-
 package com.vehicalrentelsystem.vehicalrentalsystem.dto;
 
 import lombok.*;
@@ -14,4 +13,7 @@ public class BookingDTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private String status;
+
+    // ✅ Add this
+    private Double totalAmount;
 }
