@@ -1,55 +1,115 @@
 import React, { useEffect, useState } from 'react';
-import { api } from '../../axiosConfig';
-import UserNavbar from '../../components/Common/UserNavbar';
-import '../MyBookings.css';
+import axios from 'axios';
 
 const MyBookings = () => {
   const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const userId = localStorage.getItem("userId");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const response = await api.get('/booking/my-bookings');
-        setBookings(response.data);
+        if (!userId || !token) {
+          console.warn("Missing user ID or token");
+          return;
+        }
+
+        const res = await axios.get(
+          `http://localhost:8080/booking/my-detailed-bookings-by-user/${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setBookings(res.data);
       } catch (err) {
-        setError('Failed to fetch your bookings.');
-        console.error(err);
-      } finally {
-        setLoading(false);
+        console.error("Failed to fetch bookings", err);
       }
     };
 
     fetchBookings();
-  }, []);
+  }, [userId, token]);
 
   return (
-    <div className="my-bookings-container">
-      <UserNavbar />
-      <h2>My Bookings</h2>
+    <div className="container mt-4">
+      <h2 className="text-center mb-4">My Bookings</h2>
+      <div className="row">
+        {bookings.length === 0 ? (
+          <p className="text-center">No bookings found.</p>
+        ) : (
+          bookings.map((booking, index) => (
+            <BookingCard key={index} booking={booking} />
+          ))
+        )}
+      </div>
+    </div>
+  );
+};
 
-      {loading && <p className="loading-text">Loading your bookings...</p>}
-      {error && <p className="error-text">{error}</p>}
-      {!loading && bookings.length === 0 && <p>No bookings found.</p>}
+const BookingCard = ({ booking }) => {
+  const {
+    brand,
+    model,
+    number,
+    image,
+    pricePerDay,
+    totalAmount,
+    ownerCity,
+    ownerName,
+    ownerPhone,
+    startDate,
+    endDate,
+    status,
+  } = booking;
 
-      <div className="bookings-list">
-        {bookings.map(booking => (
-          <div key={booking.id} className="booking-card">
-            <h3>{booking.vehicle.brand} {booking.vehicle.model}</h3>
-            <p><strong>Price:</strong> ₹{booking.vehicle.pricePerDay}/day</p>
-            <p><strong>Location:</strong> {booking.vehicle.location}</p>
-
-            <p className={`status ${booking.status.toLowerCase()}`}>
-              🚗 Status: {booking.status}
-            </p>
-
-            <hr />
-            <h4>Owner Details</h4>
-            <p><strong>📞 Contact:</strong> {booking.vehicle.ownerPhone}</p>
-            <p><strong>🏠 Address:</strong> {booking.vehicle.ownerAddress}</p>
-          </div>
-        ))}
+  return (
+    <div className="col-md-4 mb-4">
+      <div className="card shadow-sm h-100">
+        {image && (
+          <img
+            src={`http://localhost:8080${image}`}
+            className="card-img-top"
+            alt="Vehicle"
+            style={{ height: "200px", objectFit: "cover" }}
+          />
+        )}
+        <div className="card-body">
+          <h5 className="card-title">
+            {brand} {model}
+          </h5>
+          <p className="card-text">
+            <strong>Number Plate:</strong> {number}
+            <br />
+            <strong>Price/Day:</strong> ₹{pricePerDay}
+            <br />
+            <strong>Total Amount:</strong> ₹{totalAmount}
+            <br />
+            <strong>Location:</strong> {ownerCity}
+            <br />
+            <strong>Owner:</strong> {ownerName}
+            <br />
+            <strong>Owner Phone:</strong> {ownerPhone}
+            <br />
+            <strong>Start Date:</strong> {startDate}
+            <br />
+            <strong>End Date:</strong> {endDate}
+            <br />
+            <strong>Status:</strong>{" "}
+            <span
+              className={`badge ${
+                status === "CONFIRMED"
+                  ? "bg-success"
+                  : status === "CANCELED"
+                  ? "bg-danger"
+                  : "bg-secondary"
+              }`}
+            >
+              {status}
+            </span>
+          </p>
+        </div>
       </div>
     </div>
   );

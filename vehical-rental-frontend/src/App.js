@@ -14,6 +14,7 @@ import Profile from './components/User/Profile';
 import UploadVehicle from './components/User/UploadVehicle';
 import './App.css';
 import VehicleDetail from './components/User/VehicleDetail';
+import MyBookings from "./components/User/MyBookings";
 
 function App() {
   return (
@@ -61,6 +62,8 @@ function App() {
          <Route path="/user/profile" element={<Profile />} /> 
          <Route path="/user/vehicle/:id" element={<VehicleDetail />} /> 
          <Route path="/user/upload-vehicle" element={<UploadVehicle />} />   
+         <Route path="/user/my-bookings" element={<MyBookings />} />
+
       </Routes>
       </div>
     </Router>

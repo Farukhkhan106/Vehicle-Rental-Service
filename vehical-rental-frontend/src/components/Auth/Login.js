@@ -11,16 +11,21 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleLogin = async (event) => {
-    event.preventDefault(); // Prevent the default form submission behavior
+    event.preventDefault();
     try {
       const response = await api.post('/auth/login', { email, password });
       const token = response.data;
-      console.log('Response:', token);
 
       const decodedToken = jwtDecode(token);
       let role = decodedToken.role;
-      console.log('Decoded Role:', role);
+      const userEmail = decodedToken.sub;
+      const userId = decodedToken.userId; // ✅ Extract userId
 
+      console.log('Decoded Role:', role);
+      console.log('User Email:', userEmail);
+      console.log('User ID:', userId);
+
+      // Normalize roles
       if (role === 'ROLE_USER') {
         role = 'USER';
       } else if (role === 'ROLE_OWNER') {
@@ -32,17 +37,19 @@ const Login = () => {
         return;
       }
 
+      // Save data in localStorage
+      localStorage.setItem('userEmail', userEmail);
+      localStorage.setItem('userId', userId); // ✅ Save userId here
       localStorage.setItem('token', token);
       localStorage.setItem('role', role);
 
+      // Navigate based on role
       if (role === 'OWNER') {
         navigate('/owner/dashboard');
       } else if (role === 'USER') {
         navigate('/user/dashboard');
       } else if (role === 'ADMIN') {
         navigate('/admin/dashboard');
-      } else {
-        alert('Invalid role!');
       }
     } catch (error) {
       console.error('Login failed:', error);
@@ -53,7 +60,10 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <Navbar />
-      <form className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-xs border border-gray-200 text-center" onSubmit={handleLogin}>
+      <form
+        className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-xs border border-gray-200 text-center"
+        onSubmit={handleLogin}
+      >
         <h1 className="text-3xl font-extrabold text-gray-800 mb-6">Login</h1>
         <div className="space-y-4">
           <input
@@ -73,7 +83,7 @@ const Login = () => {
             required
           />
           <button
-            type="submit" // Change to type="submit" to trigger form submission
+            type="submit"
             className="w-full bg-blue-600 text-white p-2 text-sm rounded-lg hover:bg-blue-700 transition font-medium"
           >
             Login
