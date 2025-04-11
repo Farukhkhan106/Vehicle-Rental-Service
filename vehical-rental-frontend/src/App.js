@@ -22,7 +22,7 @@ import MyBookings from './components/User/MyBookings';
 // Owner Components
 import OwnerDashboard from './components/Owner/OwnerDashboard';
 import UploadVehicle from './components/Owner/UploadVehicle';
-// import MyVehicles from './components/Owner/MyVehicles';
+import MyVehicles from './components/Owner/MyVehicles';
 // import OwnerBookings from './components/Owner/OwnerBookings';
 // import OwnerProfile from './components/Owner/OwnerProfile';
 
@@ -96,6 +96,11 @@ function App() {
   </PrivateRoute>
 } />
 
+<Route path="/owner/my-vehicles" element={
+  <PrivateRoute role="OWNER">
+    <MyVehicles/>
+  </PrivateRoute>
+} />
         
       </Routes>
     </Router>

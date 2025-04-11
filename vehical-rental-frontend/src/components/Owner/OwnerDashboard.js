@@ -15,18 +15,20 @@ const OwnerDashboard = () => {
 
   useEffect(() => {
     const fetchMyVehicles = async () => {
-      try {
-        const userId = localStorage.getItem('userId');
-        const response = await api.get(`/vehicle/owner/${userId}`);
-        setVehicles(response.data);
-        setFilteredVehicles(response.data);
-      } catch (err) {
-        setError('Failed to fetch your vehicles.');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+        try {
+          const response = await api.get('/vehicle/my-vehicles', {
+            withCredentials: true
+          });
+          setVehicles(response.data);
+          setFilteredVehicles(response.data);
+        } catch (err) {
+          setError('Failed to fetch your vehicles.');
+          console.error(err);
+        } finally {
+          setLoading(false);
+        }
+      };
+      
 
     fetchMyVehicles();
   }, []);
