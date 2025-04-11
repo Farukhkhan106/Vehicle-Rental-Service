@@ -18,7 +18,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 import java.util.List;
+
 @Configuration
 public class SecurityConfig {
 
@@ -56,15 +58,16 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/vehicle/add").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
+
+                        // ✅ Owner ko bhi allow kiya vehicle upload ke liye
+                        .requestMatchers("/vehicle/add").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER", "ROLE_OWNER")
+
                         .requestMatchers("/vehicle/admin/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/booking/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/booking/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_OWNER")
                         .requestMatchers(HttpMethod.DELETE, "/vehicle/vehicles/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                        .requestMatchers("/uploads/**").permitAll() // ✅ Images Access Karne Ke Liye Allow Kiya
+                        .requestMatchers("/uploads/**").permitAll() // ✅ For image access
                         .anyRequest().authenticated()
                 )
-
-
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -74,7 +77,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // frontend URL
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
@@ -83,5 +86,4 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
 }
