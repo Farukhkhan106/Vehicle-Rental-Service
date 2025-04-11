@@ -124,5 +124,17 @@ public class VehicleController {
         }
     }
 
+    @PutMapping("/update-status/{vehicleId}")
+    public ResponseEntity<?> updateStatus(@PathVariable Long vehicleId,
+                                          @RequestParam("status") String status,
+                                          Authentication authentication) {
+        try {
+            String userEmail = authentication.getName();
+            vehicleService.updateVehicleStatus(vehicleId, status, userEmail);
+            return ResponseEntity.ok("Vehicle status updated to " + status);
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body("Error: " + e.getMessage());
+        }
+    }
 
 }

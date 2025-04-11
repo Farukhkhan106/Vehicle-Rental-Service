@@ -120,7 +120,7 @@ public class VehicleService {
 
     }
 
-    private VehicleDTO mapToDTO(Vehicle vehicle) {
+    public VehicleDTO mapToDTO(Vehicle vehicle) {
         List<String> photoUrls = new ArrayList<>();
         try {
             if (vehicle.getPhotosJson() != null) {
@@ -166,5 +166,29 @@ public class VehicleService {
     public List<Vehicle> getVehiclesByOwnerId(Long ownerId) {
         return vehicleRepository.findByOwnerId(ownerId);
     }
+
+    public void updateVehicleStatus(Long vehicleId, String status, String userEmail) {
+        Vehicle vehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found with ID: " + vehicleId));
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + userEmail));
+
+        // Only owner can update their vehicle status
+        if (!vehicle.getOwnerId().equals(user.getId())) {
+            throw new RuntimeException("Access denied! You can only update your own vehicle status.");
+        }
+
+        VehicleStatus newStatus;
+        try {
+            newStatus = VehicleStatus.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid status: " + status);
+        }
+
+        vehicle.setStatus(newStatus);
+        vehicleRepository.save(vehicle);
+    }
+
 
 }

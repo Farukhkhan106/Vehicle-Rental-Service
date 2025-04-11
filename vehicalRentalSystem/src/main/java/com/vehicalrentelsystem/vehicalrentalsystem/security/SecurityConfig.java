@@ -58,16 +58,16 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-
-                        // ✅ Owner ko bhi allow kiya vehicle upload ke liye
+                        .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/vehicle/my-vehicles").hasAuthority("ROLE_OWNER")
+                        .requestMatchers("/vehicle/update-status/**").hasAuthority("ROLE_OWNER")
                         .requestMatchers("/vehicle/add").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER", "ROLE_OWNER")
-
                         .requestMatchers("/vehicle/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/booking/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_OWNER")
-                        .requestMatchers(HttpMethod.DELETE, "/vehicle/vehicles/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                        .requestMatchers("/uploads/**").permitAll() // ✅ For image access
+                        .requestMatchers(HttpMethod.DELETE, "/vehicle/delete/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_OWNER")
                         .anyRequest().authenticated()
                 )
+
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
