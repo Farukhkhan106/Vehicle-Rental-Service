@@ -163,4 +163,8 @@ public class VehicleService {
 
         return "/uploads/" + fileName;
     }
+    public List<Vehicle> getVehiclesByOwnerId(Long ownerId) {
+        return vehicleRepository.findByOwnerId(ownerId);
+    }
+
 }

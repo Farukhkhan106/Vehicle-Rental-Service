@@ -13,4 +13,5 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     // VehicleRepository.java
     Optional<Vehicle> findById(Long id);
 
+
 }

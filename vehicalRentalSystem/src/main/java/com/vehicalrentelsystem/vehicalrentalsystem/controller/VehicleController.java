@@ -114,6 +114,15 @@ public class VehicleController {
         }
     }
 
+    @GetMapping("/owner/{ownerId}")
+    public ResponseEntity<?> getVehiclesByOwnerId(@PathVariable Long ownerId) {
+        try {
+            List<Vehicle> vehicles = vehicleService.getVehiclesByOwnerId(ownerId);
+            return ResponseEntity.ok(vehicles.stream().map(vehicleService::mapToDTO).toList());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error fetching vehicles: " + e.getMessage());
+        }
+    }
 
 
 }
