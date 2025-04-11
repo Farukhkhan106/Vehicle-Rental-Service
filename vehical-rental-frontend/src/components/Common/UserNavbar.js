@@ -17,7 +17,6 @@ const UserNavbar = () => {
         <button onClick={() => navigate('/user/profile')}>My Profile</button>
         <button onClick={() => navigate('/user/book-vehicle')}>Book Vehicle</button>
         <button onClick={() => navigate('/user/my-bookings')}>My Bookings</button>
-        <button onClick={() => navigate('/user/upload-vehicle')}>Upload Vehicle</button>
         <button onClick={handleLogout} className="logout">Logout</button>
       </div>
     </nav>

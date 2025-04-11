@@ -33,6 +33,10 @@ const MyBookings = () => {
     fetchBookings();
   }, [userId, token]);
 
+  const removeBookingFromState = (id) => {
+    setBookings(prev => prev.filter(b => b.bookingId !== id));
+  };
+
   return (
     <div className="my-bookings-container">
       <h2 className="my-bookings-heading">My Bookings</h2>
@@ -41,7 +45,7 @@ const MyBookings = () => {
           <p className="text-center">No bookings found.</p>
         ) : (
           bookings.map((booking, index) => (
-            <BookingCard key={index} booking={booking} />
+            <BookingCard key={index} booking={booking} onDelete={removeBookingFromState} />
           ))
         )}
       </div>
@@ -49,9 +53,9 @@ const MyBookings = () => {
   );
 };
 
-const BookingCard = ({ booking }) => {
+const BookingCard = ({ booking, onDelete }) => {
   const {
-    id,
+    bookingId,
     brand,
     model,
     number,
@@ -69,8 +73,11 @@ const BookingCard = ({ booking }) => {
   const token = localStorage.getItem("token");
 
   const handleCancel = async () => {
+    const confirmCancel = window.confirm("Are you sure you want to cancel this booking?");
+    if (!confirmCancel) return;
+
     try {
-      await axios.put(`http://localhost:8080/booking/cancel/${id}`, {}, {
+      await axios.put(`http://localhost:8080/booking/cancel/${bookingId}`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("Booking canceled successfully");
@@ -81,12 +88,15 @@ const BookingCard = ({ booking }) => {
   };
 
   const handleDelete = async () => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this canceled booking?");
+    if (!confirmDelete) return;
+
     try {
-      await axios.delete(`http://localhost:8080/booking/delete/${id}`, {
+      await axios.delete(`http://localhost:8080/booking/delete/${bookingId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("Booking deleted successfully");
-      window.location.reload();
+      onDelete(bookingId);
     } catch (err) {
       alert("Failed to delete booking");
     }
@@ -120,10 +130,10 @@ const BookingCard = ({ booking }) => {
         </div>
         <div className="btn-container">
           {status === "CONFIRMED" && (
-            <button className="btn btn-warning" onClick={handleCancel}>Cancel</button>
+            <button className="btn btn-warning btn-sm" onClick={handleCancel}>Cancel</button>
           )}
           {status === "CANCELED" && (
-            <button className="btn btn-danger" onClick={handleDelete}>Delete</button>
+            <button className="btn btn-danger btn-sm" onClick={handleDelete}>Delete</button>
           )}
         </div>
       </div>
